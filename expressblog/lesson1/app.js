@@ -9,12 +9,15 @@ var MongoStore = require("connect-mongo")(session);
 
 var routes = require('./routes/index');
 var settings = require("./setting");
+var flash = require("connect-flash");
+
 var app = express();
 
 module.exports = app;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
+app.use(flash());
+app.set('port', 4000);
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -25,9 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: settings.cookieSecret,
   key: settings.db,
+  resave: true,
+  saveUninitialized: false,
   cookie: {maxAge:1000*60*60*24*30},//30days
-  resave: false,
-  saveUninitialized: true,
   store: new MongoStore({
     db: settings.db,
     host: settings.host,
